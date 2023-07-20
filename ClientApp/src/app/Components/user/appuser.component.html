@@ -1,0 +1,831 @@
+  <div class="hs">
+    <div class="row">
+      <!--Left Side Menu-->
+      <div class="col-sm-4">
+        <div class="notebooks" *ngIf="(!mobileView) || (mobileView && !IsNoteBookSelected)">
+
+          <!-- User Information -->
+
+          <div>
+            <div class="row">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <div class="row">
+
+                    <div class="col-sm-12">
+                      <div class="row bg-primary bg-gradient text-light rounded m-1 text-left">
+                        <h6 class="m-1"><i class="fa-solid fa-cloud m-1"></i> <strong>Notes Cloud</strong></h6>
+                      </div>
+                      <div class="row m-1">
+
+                        <div class="dropdown user-photo">
+                          <a href="#" class="link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                            <strong> Welcome {{user.displayName}} </strong> <img src="{{user.photoURL}}" />
+
+                          </a>
+
+
+
+                          <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
+                            <li><a class="dropdown-item" href="#"><i class="fa-solid fa-gear"></i> Settings</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fa-solid fa-user"></i> Profile</a></li>
+                            <li><a class="dropdown-item" href="#" (click)="onSelectPresentation()"><i class="fa-solid fa-user"></i> Presentation</a></li>
+
+                            <li><hr class="dropdown-divider"></li>
+                            <li (click)="onSelectSignout()"><a class="dropdown-item" href="#"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign out</a></li>
+                          </ul>
+                        </div>
+
+
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <!--Notebooks menu -->
+          <div>
+            <!-- 1- Search in Notebooks-->
+            <div class="row">
+              <div class="col-sm-12">
+                <div>
+                  <input type="text" [(ngModel)]="searchInput" class="form-control m-1" placeholder="Search in Notebook Names">
+                  <!--<div class="input-group-append">
+              <button class="btn btn-outline-secondary m-1" type="button"><i class="fas fa-search"></i></button>
+              <button class="btn btn-outline-secondary" type="button" (click)="onStopSearchNotebooks()"><i class="fas fa-close"></i></button>
+          </div>-->
+                </div>
+              </div>
+            </div>
+
+            <!-- 2- Add New Notebook-->
+            <div class="row">
+              <div>
+                <div class="dropdown">
+                  <button class="btn btn-success bg-gradient btn-sm m-1" type="button" id="CreateNotebookButton" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-plus"></i> Create New
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="CreateNotebookMenuButton">
+                    <a class="dropdown-item" href=# (click)="onAddNoteBook(1)"><i class="fas fa-sticky-note"></i> Notebook</a>
+                    <a class="dropdown-item" href=# (click)="onAddNoteBook(3)"><i class="fa-sharp fa-solid fa-list-check"></i> Check-list</a>
+                    <a class="dropdown-item" href=# (click)="onAddNoteBook(2)"><i class="far fa-calendar-alt"></i> Weekly Planner</a>
+
+                    <!--<a class="dropdown-item" href=# (click)="onAddNoteBook(4)"><i class="fas fa-image"></i> Image album</a>-->
+
+                  </div>
+                  <!--Delete All-->
+                  <button class="btn btn-danger bg-gradient btn-sm m-1" type="button" (click)="onDeleteAll()">
+                    <i class="fas fa-trash"></i> Delete All
+                  </button>
+           
+
+                  <!--Sort-->
+                  <!--<button class="btn btn-primary bg-gradient btn-sm m-1 float-right" type="button" (click)="onSortDirection()">
+                    <i *ngIf="SortDirection==='asc'" class="fas fa-sort-amount-down"></i>
+                    <i *ngIf="SortDirection==='desc'" class="fas fa-sort-amount-up"></i>
+                  </button>
+                  <button class="btn btn-primary bg-gradient btn-sm m-1 float-right" type="button" id="sortNotebooksButton" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Sort By
+                  </button>
+                  <div class="dropdown-menu" aria-labelledby="sortNotebooksButton">
+                    <a class="dropdown-item" href=# (click)="onSelectSortParam('Name')"><i class="fas fa-sort-alpha-down"></i> Name</a>
+                    <a class="dropdown-item" href=# (click)="onSelectSortParam('CreatedDate')"><i class="far fa-calendar-alt"></i> Created Date</a>
+                    <a class="dropdown-item" href=# (click)="onSelectSortParam('Status')"><i class="fas fa-key"></i> Status</a>
+                  </div>-->
+
+
+
+                </div>
+              </div>
+
+
+            </div>
+
+            <!--3- Notebooks-->
+            <div class="row">
+              <div class="people-list card bg-white">
+                <div *ngIf="isLoading" class="text-muted">Loading notebooks...</div>
+                <div *ngIf="Notebooks.length==0 && !isLoading" class="text-muted">There are no notebooks</div>
+
+                <div *ngFor="let notebook of Notebooks|filter:searchInput:'name'">
+                  <ul class="list-unstyled chat-list mt-2 mb-0">
+                    <li [ngClass]="{'active': notebook==selectedNoteBook}" class="clearfix p-1" (click)="onNotebookSelect(notebook.id)" id={{notebook.id}}>
+                      <div class="about">
+
+                        <div class="name">
+
+                          <span *ngIf="notebook.notebookType==3">
+                            <i class="fa-sharp fa-solid fa-list-check"></i>
+                          </span>
+                          <span *ngIf="notebook.notebookType==1">
+                            <i class="fas fa-sticky-note"></i>
+                          </span>
+                          <span *ngIf="notebook.notebookType==4">
+                            <i class="fas fa-image"></i>
+                          </span>
+                          <span *ngIf="notebook.notebookType==2">
+                            <i class="far fa-calendar-alt"></i>
+                          </span>
+
+                          {{notebook.name}}
+
+                        </div>
+                        <div class="status">
+                          <span *ngIf="notebook.shareStatus==0">
+                            <i class="fas fa-globe"></i> Public
+                          </span>
+                          <span *ngIf="notebook.shareStatus==1">
+                            <i class="fas fa-lock"></i> Private
+                          </span>
+                          <span *ngIf="notebook.shareStatus==2">
+                            <i class="fas fa-users"></i> Shared
+                          </span>
+                          -
+                          <span *ngIf="notebook.notebookType==3">
+                            <small>{{notebook.checkedCount}}/{{notebook.uncheckedCount+notebook.checkedCount}} done</small>
+                          </span>
+                          <span *ngIf="notebook.notebookType==1">
+                            <small>{{notebook.textCount}} text notes</small>
+                          </span>
+                          <span *ngIf="notebook.notebookType=='Image Album'">
+                            <small>{{notebook.imageCount}} images</small>
+                          </span>
+                          -
+                          <span>
+                            <small>Last Modified: {{notebook.modifiedDate|date:'short'}}</small>
+                          </span>
+                        </div>
+                        <div class="status">
+
+
+                        </div>
+
+                      </div>
+                    </li>
+
+
+                  </ul>
+
+
+                </div>
+                <span class="m-b-0  position-relative" id="last"></span>
+
+
+
+              </div>
+
+            </div>
+          </div>
+
+
+
+        </div>
+
+
+
+      </div>
+
+
+      <!-- Notes Area-->
+      <div class="col-sm-8" *ngIf="IsNoteBookSelected==true">
+
+
+        <!-- Head -->
+        <div class="row">
+          <div class="card bg-light top-heading">
+            <div class="card-body">
+              <div class="row">
+
+                <div class="col-sm-12">
+                  <!--Close Notebook-->
+                  <h6 style="display:inline;">
+                    <button class="border-0 bg-transparent" (click)="onCloseNotebook()">
+                      <i class="fa-solid fa-chevron-left"></i>
+
+                      <span *ngIf="selectedNoteBook.notebookType==1">
+                        <strong class="m-3"> Selected Notebook:</strong>
+                      </span>
+                      <span *ngIf="selectedNoteBook.notebookType==2">
+                        <strong class="m-3"> Selected Weekly Planner:</strong>
+                      </span>
+                      <span *ngIf="selectedNoteBook.notebookType==3">
+                        <strong class="m-3"> Selected Checklist:</strong>
+                      </span>
+                      <span *ngIf="selectedNoteBook.notebookType==4">
+                        <strong class="m-3"> Selected Image Album:</strong>
+                      </span>
+
+                    </button>
+                  </h6>
+
+                  <!-- Notebook Menu-->
+
+                  <span class="float-right">
+                    <button class="btn btn-sm btn-secondary bg-gradient m-1" data-bs-toggle="offcanvas" data-bs-target="#offcanvasTop" aria-controls="offcanvasTop" (click)="onNotebookSetting()"> <i class="fa-solid fa-gear"></i></button>
+
+                    <button class="btn btn-sm btn-danger bg-gradient m-1" (click)="onDeleteNotebook()"> <i class="fa-sharp fa-solid fa-trash-can"></i></button>
+
+                    <button class="btn btn-sm btn-primary bg-gradient m-1" (click)="onCloseNotebook()"> <i class=" fa-solid fa-close"></i></button>
+
+
+                  </span>
+
+                  <div class="offcanvas offcanvas-top h-50" tabindex="-1" id="offcanvasTop" aria-labelledby="offcanvasTopLabel">
+                    <div class="offcanvas-header">
+                      <h5 id="offcanvasTopLabel">Selected Notebook: {{selectedNoteBook.name}}</h5>
+                      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                      <div class="m-1">
+                        <strong class="m-1">Notebook Name:</strong> "{{selectedNoteBook.name}}"
+                        <button class="border-0 edit-icon m-1 " (click)="onEditNotebookName()">
+                          <i class="fa-solid fa-pen-to-square"></i>
+
+                        </button>
+                      </div>
+                      <div class="m-1">
+                        <strong class="m-1">Notebook Type:</strong> "{{selectedNoteBook.notebookType}}"
+                        <button class="border-0 edit-icon m-1 ">
+                          <i class="fa-solid fa-pen-to-square"></i>
+
+                        </button>
+                      </div>
+
+                      <div class="m-1">
+                        <strong class="m-1">Created Date:</strong> {{selectedNoteBook.createdDate|date:'short'}}
+                      </div>
+
+                      <div class="m-1">
+                        <strong class="m-1">Created By:</strong> {{selectedNoteBook.addedBy}}
+                      </div>
+
+                      <div class="m-1">
+                        <strong class="m-1">Last Modified:</strong> {{selectedNoteBook.modifiedDate|date:'short'}}
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="row">
+                <div class="col-sm-8">
+
+                  <!--Notebook Info-->
+                  <!--Name -->
+                  <div>
+
+                    <h5 class="notebook-name rounded " (click)="onEditNotebookName()">
+                      <strong class="m-2">
+                        {{selectedNoteBook.name}}
+                      </strong>
+                      <!--<span> <button class="border-0 edit-icon m-1" (click)="onEditNotebookName()"><i class="fa-regular fa-pen-to-square"></i></button></span>-->
+                    </h5>
+                    <span>
+                      <button class="btn btn-sm bg-transparent m-1" (click)="onNotebookDetail()"> <i class="fa-solid fa-angle-down"></i></button>
+
+                    </span>
+
+                    <!-- Status -->
+
+                    <small class="notebook-status text-muted rounded">
+                      <span class="m-2" data-bs-toggle="modal" data-bs-target="#statusModal" role="button" (click)="getUsersOfNb()">
+
+
+                        <span *ngIf="selectedNoteBook.shareStatus==0">
+                          <i class="fas fa-globe"></i> Public
+                        </span>
+                        <span *ngIf="selectedNoteBook.shareStatus==1">
+                          <i class="fas fa-lock"></i> Private
+                        </span>
+                        <span *ngIf="selectedNoteBook.shareStatus==2">
+                          <i class="fas fa-users"></i> Shared
+                        </span>
+
+                      </span>
+                      <!--<span>
+      <button class="border-0 edit-icon m-1" data-bs-toggle="modal" data-bs-target="#statusModal">
+        <i class="fa-regular fa-pen-to-square "></i>
+      </button>
+    </span>-->
+                    </small>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Share Status Menu</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <div class="m-2">
+                              This Notebook is:
+                              <strong>
+  <span [hidden]="selectedNoteBook.shareStatus!=1" class="m-2">
+    Private<br />
+    <input type="radio" class="btn-check" id="btn-check2" autocomplete="off" (click)="onStatusChange(2)">
+    <label class="btn btn-success m-2" for="btn-check2">Share with others</label>
+  </span>
+  <span [hidden]="selectedNoteBook.shareStatus!=2" class="m-2">Shared</span>
+</strong>
+                            </div>
+                            
+                            <div class="m-2">
+
+                             
+
+                              <div class="row selected-users m-2" [hidden]="selectedNoteBook.shareStatus!=2">
+                                <div class="col user-list">
+                                  <h6>Users of this Notebook:</h6>
+                                  <ul class="list-unstyled chat-list mt-2 mb-0" *ngFor="let Suser of selectedUsers">
+                                    <li (click)="onUserDelete(Suser)"><img src="{{Suser.photoURL}}" class="m-1" /> {{Suser.displayName}}</li>
+                                  </ul>
+                                </div>
+
+                                <div class="col user-list">
+                                  <h6>Select from users list:</h6>
+                                  <ul class="list-unstyled chat-list mt-2 mb-0" *ngFor="let user of users">
+                                    <li (click)="onUserSelect(user)"><img src={{user.photoURL}} class="m-1" /> {{user.displayName}}</li>
+                                  </ul>
+                                </div>
+
+                              </div>
+                            </div>
+                          </div>
+                          <div class="modal-footer">
+                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+   
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+
+                    <!--<div class="modal fade" id="statModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Change Status of '{{selectedNoteBook.name}}'</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Choose desired status:
+          <p>
+            <input type="radio" class="btn-check" name="options-outlined" id="danger-outlined" autocomplete="off" [checked]="!statusShared">
+            <label class="btn btn-outline-danger m-2" for="danger-outlined" (click)="onPrivateSelect()">Private</label> or
+
+            <input type="radio" class="btn-check" name="options-outlined" id="success-outlined" autocomplete="off" [checked]="statusShared">
+            <label class="btn btn-outline-success m-2 " for="success-outlined" (click)="onSharedSelect()">Shared with selected users:</label>
+          </p>
+          <div class="row selected-users" [hidden]="!statusShared">
+            <div class="col user-list">
+              <h6>Select from users list:</h6>
+              <ul class="list-unstyled chat-list mt-2 mb-0" *ngFor="let user of users">
+                <li (click)="onSelectSharedUser(user.uid)">{{user.displayName}}</li>
+              </ul>
+            </div>
+            <div class="col user-list">
+              <h6>Selected users list:</h6>
+              <ul class="list-unstyled chat-list mt-2 mb-0" *ngFor="let user of users">
+                <li (dblclick)="onSelectSharedUser(user.uid)">{{user.displayName}}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="onEditStatus()">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>-->
+                    <!--NoteBook  content-->
+                    <small class="text-muted">
+                      -
+                      <span *ngIf="selectedNoteBook.notebookType==3">
+                        <small>{{selectedNoteBook.checkedCount}}/{{selectedNoteBook.uncheckedCount+selectedNoteBook.checkedCount}} done</small>
+                      </span>
+                      <span *ngIf="selectedNoteBook.notebookType==1">
+                        <small>{{selectedNoteBook.textCount}} text notes</small>
+                      </span>
+                      <span *ngIf="selectedNoteBook.notebookType==4">
+                        <small>{{selectedNoteBook.imageCount}} images</small>
+                      </span>
+                    </small>
+
+
+
+                    <!-- Search in Notes and sort-->
+
+                    <div [hidden]="!isNotebookDetail">
+                      <div class="input-group">
+                        <input type="text" [(ngModel)]="searchNoteInput" class="form-control input-sm" placeholder="Search in this notebook">
+                        <!--<div class="input-group-append">
+           <button class="btn btn-outline-secondary btn-sm" type="button" ><i class="fas fa-search"></i></button>
+          <button class="btn btn-outline-secondary btn-sm" type="button" (click)="onStopSearchNotes()"><i class="fas fa-close"></i></button>
+
+      </div>-->
+                        <!--Sort-->
+                        <!--<button class="btn btn-primary bg-gradient btn-sm m-1 float-right" type="button" (click)="onSortNoteDirection()">
+                          <i *ngIf="SortNoteDirection==='asc'" class="fas fa-sort-amount-down"></i>
+                          <i *ngIf="SortNoteDirection==='desc'" class="fas fa-sort-amount-up"></i>
+                        </button>
+                        <button class="btn btn-primary bg-gradient btn-sm m-1 float-right" type="button" id="sortNotesButton" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Sort By
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="sortNotesButton">
+                          <a class="dropdown-item" href=# (click)="onSelectSortNoteParam('stickerType')"><i class="fa fa-tag "></i> Sticker Type</a>
+                          <a class="dropdown-item" href=# (click)="onSelectSortNoteParam('createdDate')"><i class="far fa-calendar-alt"></i> Created Date</a>
+                          <a class="dropdown-item" href=# (click)="onSelectSortNoteParam('modifiedDate')"><i class="fa-sharp fa-solid fa-calendar-pen"></i> Modified Date</a>
+                        </div>-->
+                      </div>
+                    </div>
+
+
+
+
+
+                  </div>
+
+                  <!-- Right column Notebook Heading -->
+                  <div class="col-sm-4 align-self-center">
+
+
+                    <!--filter by sticker-->
+                    <div [hidden]="!isNotebookDetail">
+                      <small>
+                        Filter by sticker:
+                      </small>
+                      <div class="btn-group btn-group-sm" role="group" aria-label="Basic mixed styles example">
+                        <button type="button" class=" btn btn-outline-secondary" (click)="onStickerFilter('')" active>All</button>
+                        <button type="button" class="btn btn-primary" (click)="onStickerFilter('primary')">Blue</button>
+                        <button type="button" class="btn btn-secondary" (click)="onStickerFilter('secondary')">Gray</button>
+                        <button type="button" class="btn btn-success" (click)="onStickerFilter('success')">Green</button>
+                        <button type="button" class="btn btn-danger" (click)="onStickerFilter('danger')">Red</button>
+                        <button type="button" class="btn btn-warning" (click)="onStickerFilter('warning')">Yellow</button>
+                        <input type="text" [(ngModel)]="searchStickerInput" class="input-sm m-1" placeholder="Sticker Note">
+
+                      </div>
+                      
+                    </div>
+
+                    
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+
+        </div>
+
+        <!-- Notes Body -->
+        <div class="row mb-2">
+          <div class="col-sm-12">
+            <div *ngIf="IsNoteBookSelected">
+
+              <!--Weekly Planner-->
+              <div *ngIf="selectedNoteBook.notebookType==2" class="notes-extended card">
+
+                <!--Week-->
+                <div>
+                  <!--Day-->
+                  <div *ngFor="let day of week">
+                    <div class="row">
+                      <span class="text-muted"><small>{{day}}</small></span>
+                      <div *ngFor="let Note of activeNotes|filter:searchNoteInput:'textNote'|filter:searchStickerInput:'stickerNote'">
+                        <div *ngIf="Note.day==dayOfWeek[day]">
+                          <span class="m-1 p-1 planner-note" data-bs-toggle="modal" data-bs-target="#AddPlannerNoteModal" (click)="onEditWeekplanNote(Note.id,day,isEdit=true)">
+                            <small *ngIf="Note.stickerType!=0"><span class="m-1 badge bg-{{stickerTypeString[Note.stickerType]}}">{{Note.stickerNote}}</span></small>
+                            <span class="planner-note-footer m-1">{{Note.hour}}</span>
+
+                            <span class="planner-note-header m-1">{{Note.header}} </span>
+                            <span class="m-1" style="white-space: pre-wrap;" [innerHTML]="Note.textNote"></span>
+
+                          </span>
+                        </div>
+                      </div>
+                      <div>
+                        <span class="badge bg-primary m-1" role="button" data-bs-toggle="modal" data-bs-target="#AddPlannerNoteModal" (click)="onEditWeekplanNote(0,day,isEdit=false)">
+                          Add Note
+                        </span>
+
+                      </div>
+
+                      <hr />
+                    </div>
+
+
+                  </div>
+
+
+                  <!-- Add Planner Note Modal -->
+                  <div class="modal fade" id="AddPlannerNoteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="exampleModalLabel">Add Planner Note</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <div class="mb-1">
+                            <label for="plannerNoteHeader" class="form-label">Note Header <small class="text-muted">(Optional)</small></label>
+                            <input type="text" [(ngModel)]="editWeekplanNote.header" class="form-control" id="plannerNoteHeader" placeholder="Note Header (optional)">
+                          </div>
+                          <div class="mb-1">
+                            <label for="plannerNoteHour" class="form-label">Hour <small class="text-muted">(Optional)</small></label>
+                            <input type="text" [(ngModel)]="editWeekplanNote.hour" class="form-control" id="plannerNoteHour" placeholder="Your note here">
+                          </div>
+                          <div class="mb-1">
+                            <label for="plannerNote" class="form-label"><b>Note *</b></label>
+                            <input type="text" class="form-control" [(ngModel)]="editWeekplanNote.textNote" id="plannerNote" placeholder="Your note here">
+                          </div>
+                          <div class="mb-1">
+                            <label class="form-label">Add Sticker<small class="text-muted">(Optional)</small></label>
+                          </div>
+
+                          <div class="m-2">
+                            Sticker Type:
+                            <div class="btn-group"
+                                 btnRadioGroup>
+                              <input type="radio" class="btn-check" name="btnradio" id="btnradio0"
+                                     [(ngModel)]="selectedSticker" [checked]="selectedSticker=='none'"
+                                     autocomplete="off" value="none">
+                              <label class="btn btn-outline-primary  m-1 btn-sm" for="btnradio0">None </label>
+
+                              <input type="radio" class="btn-check" name="btnradio" id="btnradio1"
+                                     [(ngModel)]="selectedSticker" [checked]="selectedSticker=='primary'"
+                                     autocomplete="off" value="primary">
+                              <label class="btn btn-primary m-1 btn-sm" for="btnradio1">Blue</label>
+                              <input type="radio" class="btn-check" name="btnradio" id="btnradio2"
+                                     [(ngModel)]="selectedSticker" [checked]="selectedSticker=='secondary'"
+                                     autocomplete="off" value="secondary">
+                              <label class="btn btn-secondary m-1 btn-sm" for="btnradio2">Gray</label>
+                              <input type="radio" class="btn-check" name="btnradio" id="btnradio3"
+                                     [(ngModel)]="selectedSticker" [checked]="selectedSticker=='success'"
+                                     autocomplete="off" value="success">
+                              <label class="btn btn-success m-1 btn-sm" for="btnradio3">Green</label>
+                              <input type="radio" class="btn-check" name="btnradio" id="btnradio4"
+                                     [(ngModel)]="selectedSticker" [checked]="selectedSticker=='danger'"
+                                     autocomplete="off" value="danger">
+                              <label class="btn btn-danger m-1 btn-sm" for="btnradio4">Red</label>
+                              <input type="radio" class="btn-check" name="btnradio" id="btnradio5"
+                                     [(ngModel)]="selectedSticker" [checked]="selectedSticker=='warning'"
+                                     autocomplete="off" value="warning">
+                              <label class="btn btn-warning  m-1 btn-sm"
+                                     for="btnradio5">Yellow</label>
+
+                            </div>
+
+
+
+                          </div>
+
+
+
+
+
+
+
+                          <div class="mb-1">
+                            <label class="form-label"><small>Sticker Text</small></label>
+                            <input class="form-control" type="text" [(ngModel)]="editWeekplanNote.stickerNote" placeholder="Sticker Note" />
+                          </div>
+
+
+                        </div>
+
+
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="onAddPlannerNote()">Save changes</button>
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+
+
+
+
+                </div>
+
+              </div>
+
+
+              <!--Other Notebooks Notes-->
+              <div class="mb-5 chat-history card" *ngIf="selectedNoteBook.notebookType!=2">
+                <div *ngFor="let note of activeNotes|filter:searchNoteInput:'textNote'|filter:searchStickerInput:'stickerNote'">
+                  <ul>
+                    <li class="clearfix">
+
+                      <div class="message my-message p-2 shadow-sm">
+
+
+
+
+
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#editNoteModal" (click)="onEditNote(note.id)">
+                          <span [hidden]="note.stickerType==0"
+                                class="position-absolute top-0 start-100 translate-middle badge bg-{{stickerTypeString[note.stickerType]}}">
+                            {{note.stickerNote}}
+
+                          </span>
+                        </a>
+
+                        <!--Checklist checks-->
+                        <span *ngIf="selectedNoteBook.notebookType==3">
+                          <span *ngIf="note.isChecked==true" (click)="ChangeCheck(note.id)">
+                            <i class="fa-regular fa-square-check"></i>
+                          </span>
+                          <span *ngIf="note.isChecked==false" (click)="ChangeCheck(note.id)">
+                            <i class="fa-regular fa-square"></i>
+                          </span>
+                        </span>
+                        <!--Note body-->
+                        <span class="m-1" style="white-space: pre-wrap;" [innerHTML]="note.textNote">&nbsp;</span>
+                        <small class="text-muted"> - {{note.createdDate|date:'short'}}</small>
+                        <span class="edit-note-group m-3">
+
+                          <!--edit note-->
+                          <span class="edit-note">
+                            <button class="border-0 float-right edit-icon m-1 " data-bs-toggle="modal" data-bs-target="#editNoteModal" (click)="onEditNote(note.id)">
+                              <i class="fa-solid fa-pen-to-square"></i>
+
+                            </button>
+
+                          </span>
+                          <button class="border-0 float-right delete-icon m-1" (click)="onDeleteNote(note.id)"> <i class="fa-solid fa-trash-can"></i></button>
+
+                        </span>
+
+
+                      </div>
+                    </li>
+
+                  </ul>
+
+                </div>
+
+              </div>
+
+              <!-- Edit Note Modal -->
+              <div class="modal fade" id="editNoteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalLabel">Edit Your Note</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+
+                      <div class="row">
+
+                        <div class="m-2">
+                          Your note:
+                          <textarea rows="5" class="form-control w-100 m-1" type="text" [(ngModel)]="editnoteText" name="inputtext" value="{{editnoteText}}" placeholder="{{editnoteText}}"></textarea>
+                        </div>
+
+                      </div>
+
+                      <div class="row">
+
+
+                        <div class="m-2">
+                          Sticker Type:
+                          <div class="btn-group"
+                               btnRadioGroup>
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio0"
+                                   [(ngModel)]="selectedSticker" [checked]="selectedSticker=='none'"
+                                   autocomplete="off" value="none">
+                            <label class="btn btn-outline-primary  m-1 btn-sm" for="btnradio0">None </label>
+
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio1"
+                                   [(ngModel)]="selectedSticker" [checked]="selectedSticker=='primary'"
+                                   autocomplete="off" value="primary">
+                            <label class="btn btn-primary m-1 btn-sm" for="btnradio1">Blue</label>
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio2"
+                                   [(ngModel)]="selectedSticker" [checked]="selectedSticker=='secondary'"
+                                   autocomplete="off" value="secondary">
+                            <label class="btn btn-secondary m-1 btn-sm" for="btnradio2">Gray</label>
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio3"
+                                   [(ngModel)]="selectedSticker" [checked]="selectedSticker=='success'"
+                                   autocomplete="off" value="success">
+                            <label class="btn btn-success m-1 btn-sm" for="btnradio3">Green</label>
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio4"
+                                   [(ngModel)]="selectedSticker" [checked]="selectedSticker=='danger'"
+                                   autocomplete="off" value="danger">
+                            <label class="btn btn-danger m-1 btn-sm" for="btnradio4">Red</label>
+                            <input type="radio" class="btn-check" name="btnradio" id="btnradio5"
+                                   [(ngModel)]="selectedSticker" [checked]="selectedSticker=='warning'"
+                                   autocomplete="off" value="warning">
+                            <label class="btn btn-warning  m-1 btn-sm"
+                                   for="btnradio5">Yellow</label>
+
+                          </div>
+
+
+
+                        </div>
+                      </div>
+
+                      <div class="row">
+                        <div class="m-2">
+
+                          Sticker Text:
+                          <input class="form-control m-1" type="text" [(ngModel)]="stickerText" placeholder="{{stickerText}}" />
+                        </div>
+                      </div>
+
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      <button type="button" (click)="onEditNoteSaveChanges()" class="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Scroll -->
+              <div id="notes_scroll"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Input Area -->
+
+        <div class="row" [ngClass]="{'inputMobile': mobileView === true, 'input-area' : mobileView === false}">
+          <div class="col-sm-12">
+            <div class="bg-light" *ngIf="IsNoteBookSelected==true && selectedNoteBook.notebookType!=2">
+              <div class="input-group">
+                <!-- Attachment -->
+
+                <!--<button class="btn btn-primary  bg-gradient mt-2 mb-2 pt-4 pb-4" type="button" data-bs-toggle="modal" data-bs-target="#loginModal">
+                  <i class="fa-solid fa-paperclip "></i>
+                </button>-->
+
+                <!--Unavailable for guest-->
+                <!--<div class="dropdown">
+
+            <button class="btn btn-primary  bg-gradient mt-2 mb-2 pt-4 pb-4" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fa-solid fa-paperclip "></i>
+            </button>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#fileModal"><i class="fa-solid fa-file-lines m-1"></i> Document</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#fileModal"><i class="fas fa-image m-1"></i> Image </a>
+              </li>
+
+            </ul>
+          </div>-->
+
+
+                <textarea type="text" wrap="hard" [(ngModel)]="noteInput" name="note" id="inputSubmit" placeholder="Your note"
+                          class="form-control  m-2 rounded shadow-sm note-input" (change)="onInputSubmit()">
+                  </textarea>
+
+
+                <span class="input-group-addon">
+                  <button [disabled]="noteInput.length<1" type="button" class="btn btn-primary bg-gradient mt-2 mb-2 p-4"
+                         >
+                    <i class="fa-solid fa-check "></i>
+
+                  </button>
+
+                </span>
+
+
+              </div>
+
+            </div>
+
+
+          </div>
+        </div>
+
+
+
+
+
+
+      </div>
+      </div>
+   </div>
+
+
+
+
+
